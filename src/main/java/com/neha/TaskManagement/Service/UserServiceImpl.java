@@ -3,7 +3,9 @@ package com.neha.TaskManagement.Service;
 import com.neha.TaskManagement.Dtos.LoginRequestDto;
 import com.neha.TaskManagement.Dtos.UserDto;
 import com.neha.TaskManagement.Entity.User;
+import com.neha.TaskManagement.Exception.ConflictException;
 import com.neha.TaskManagement.Exception.NotFoundException;
+import com.neha.TaskManagement.Exception.UnauthorizedException;
 import com.neha.TaskManagement.Repository.UserRepository;
 import com.neha.TaskManagement.Security.PasswordEncryption;
 import jakarta.transaction.Transactional;
@@ -28,10 +30,10 @@ public class UserServiceImpl implements UserService{
 //            throw new RuntimeException("Only admin can create new user");
 //        }
         if(userRepository.existsByEmail(userDto.getEmail())){
-            throw new RuntimeException("Email already exists!");
+            throw new ConflictException("Email already exists!");
         }
         if (userRepository.existsByUsername(userDto.getUsername())){
-            throw new RuntimeException("User already exists!");
+            throw new ConflictException("User already exists!");
         }
         String encryptedPassword = PasswordEncryption.encrypt(userDto.getPassword());
 
@@ -48,32 +50,26 @@ public class UserServiceImpl implements UserService{
         //else its a username. So, find the user accordingly.
 //        User user = userRepository.findByEmail(request.getEmail())
 //                .orElseThrow(() -> new RuntimeException("User not found"));
-        Optional<User> user;
+        User user;
         if(request.getEmail().contains("@")){
-            user = userRepository.findByEmail(request.getEmail());
+            user = userRepository.findByEmail(request.getEmail())
+                    .orElseThrow(()->new NotFoundException("User does not exists."));
         }
         else {
-            user = userRepository.findByUsername(request.getUsername());
+            user = userRepository.findByUsername(request.getUsername())
+                    .orElseThrow(()->new NotFoundException("User does not exists."));
         }
 
-        if (user.isPresent()){
-            User currentUser = user.get();
-
-            if (currentUser.getPassword().equals(PasswordEncryption.encrypt(request.getPassword()))){
-                return currentUser;
-            }
-            else{
-                throw new RuntimeException("Incorrect Password");
-            }
+        if (user.getPassword().equals(PasswordEncryption.encrypt(request.getPassword()))){
+            return user;
         }
-        else{
-            throw new NotFoundException("User not found");
-        }
+        throw new UnauthorizedException("Wrong username/password. Please try again.");
     }
 
     @Override
     public UserDto isAdmin(String email) {
-        User user = userRepository.findByEmailAndIsAdmin(email, true).orElseThrow(()->new RuntimeException("User not found"));
+        User user = userRepository.findByEmailAndIsAdmin(email, true)
+                .orElseThrow(()->new NotFoundException("User does not exists."));
 //        UserDto dto = UserDto.entityToDto(user); <- return this object instead of direct entity class.
         return UserDto.entityToDto(user);
     }
@@ -92,11 +88,13 @@ public class UserServiceImpl implements UserService{
     }
     @Override
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User not found"));
+        return userRepository.findByEmail(email)
+                .orElseThrow(()->new NotFoundException("User does not exists."));
     }
     @Override
     public UserDto updateUser(UUID userId, UserDto userDto) {
-        User existingUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User does not exists."));
         if(userDto.getUsername() != null && !userDto.getUsername().isEmpty()){
             existingUser.setUsername(userDto.getUsername());
         }
@@ -128,7 +126,8 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public User deleteUser(UUID id) {
-        User userToBeDeleted = userRepository.findById(id).orElseThrow(()->new RuntimeException("User not found"));
+        User userToBeDeleted = userRepository.findById(id)
+                .orElseThrow(()->new NotFoundException("User does not exists."));
         userRepository.delete(userToBeDeleted);
         return userToBeDeleted;
     }
