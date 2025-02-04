@@ -3,6 +3,7 @@ package com.neha.TaskManagement.Service;
 import com.neha.TaskManagement.Dtos.LoginRequestDto;
 import com.neha.TaskManagement.Dtos.UserDto;
 import com.neha.TaskManagement.Entity.User;
+import com.neha.TaskManagement.Exception.NotFoundException;
 import com.neha.TaskManagement.Repository.UserRepository;
 import com.neha.TaskManagement.Security.PasswordEncryption;
 import jakarta.transaction.Transactional;
@@ -22,6 +23,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public User signupUser(UserDto userDto) {
         //dto to entity
+//        User admin = userRepository.findById(adminId).orElseThrow(()->new RuntimeException("Admin not found"));
+//        if(!Boolean.TRUE.equals(admin.getIsAdmin())){
+//            throw new RuntimeException("Only admin can create new user");
+//        }
         if(userRepository.existsByEmail(userDto.getEmail())){
             throw new RuntimeException("Email already exists!");
         }
@@ -29,7 +34,10 @@ public class UserServiceImpl implements UserService{
             throw new RuntimeException("User already exists!");
         }
         String encryptedPassword = PasswordEncryption.encrypt(userDto.getPassword());
-        userDto.setPassword(encryptedPassword);
+
+        User newUser = UserDto.dtoToEntity(userDto);
+        newUser.setPassword(encryptedPassword);
+
         return userRepository.save(UserDto.dtoToEntity(userDto));
     }
 
@@ -59,7 +67,7 @@ public class UserServiceImpl implements UserService{
             }
         }
         else{
-            throw new RuntimeException("User not found");
+            throw new NotFoundException("User not found");
         }
     }
 
