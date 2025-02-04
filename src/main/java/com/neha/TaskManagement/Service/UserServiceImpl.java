@@ -1,6 +1,6 @@
 package com.neha.TaskManagement.Service;
 
-import com.neha.TaskManagement.Controller.LoginRequestDto;
+import com.neha.TaskManagement.Dtos.LoginRequestDto;
 import com.neha.TaskManagement.Dtos.UserDto;
 import com.neha.TaskManagement.Entity.User;
 import com.neha.TaskManagement.Repository.UserRepository;

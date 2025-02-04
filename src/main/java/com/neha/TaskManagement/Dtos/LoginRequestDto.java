@@ -1,4 +1,4 @@
-package com.neha.TaskManagement.Controller;
+package com.neha.TaskManagement.Dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotBlank;

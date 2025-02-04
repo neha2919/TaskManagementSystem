@@ -1,8 +1,8 @@
 package com.neha.TaskManagement.Controller;
 
+import com.neha.TaskManagement.Dtos.LoginRequestDto;
 import com.neha.TaskManagement.Dtos.UserDto;
 import com.neha.TaskManagement.Entity.User;
-import com.neha.TaskManagement.Model.LoginRequest;
 import com.neha.TaskManagement.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
