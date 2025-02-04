@@ -24,4 +24,8 @@ public class GlobalExceptionHandler extends BaseApiStructure {
     public ResponseEntity processingExceptionHandler(ProcessingException pe){
         return sendExceptionResponse(pe.getMessage(), HttpStatus.EXPECTATION_FAILED);
     }
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity unauthorizedExceptionHandler(UnauthorizedException ue){
+        return sendExceptionResponse(ue.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
 }
