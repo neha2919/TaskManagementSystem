@@ -39,9 +39,9 @@ public class UserController {
     public List<UserDto> getAllUsers(){
         return userService.getAllUsers();
     }
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable UUID id){
-        return userService.getUserById(id);
+    @GetMapping("/email")
+    public User getUserByEmail(@RequestParam String email){
+        return userService.getUserByEmail(email);
     }
     @DeleteMapping("/{id}")
     public User deleteUser(@PathVariable UUID id){
