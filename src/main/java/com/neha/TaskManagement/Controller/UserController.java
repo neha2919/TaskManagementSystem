@@ -22,7 +22,7 @@ public class UserController extends BaseApiStructure {
 
     //Instead of directly calling the entity, we call UserDto. And we use @Valid annotation with RequestBody annotation.
     @PostMapping("/signup")
-    public ResponseEntity signupUser(@Valid @RequestBody UserDto userDto){
+    public ResponseEntity<?> signupUser(@Valid @RequestBody UserDto userDto){
         User newUser = userService.signupUser(userDto);
         UserDto responseDto = UserDto.entityToDto(newUser);
         return sendSuccessfulApiResponse(responseDto, "Successful signup");

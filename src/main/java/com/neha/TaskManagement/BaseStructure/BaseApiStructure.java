@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class BaseApiStructure <T>{
+public class BaseApiStructure{
     public <T> ResponseEntity<ApiResponse<T>> sendSuccessfulApiResponse(T data, String message){
         ApiResponse<T> response = new ApiResponse<>();
         response.setStatus(true);
