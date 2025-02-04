@@ -28,4 +28,8 @@ public class GlobalExceptionHandler extends BaseApiStructure {
     public ResponseEntity unauthorizedExceptionHandler(UnauthorizedException ue){
         return sendExceptionResponse(ue.getMessage(), HttpStatus.UNAUTHORIZED);
     }
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity conflictExceptionHandler(ConflictException ce){
+        return sendExceptionResponse(ce.getMessage(),HttpStatus.CONFLICT);
+    }
 }
