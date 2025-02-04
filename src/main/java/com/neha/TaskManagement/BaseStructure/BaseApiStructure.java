@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class BaseApiStructure <T>{
-    public ResponseEntity<ApiResponse<T>> sendSuccessfulApiResponse(T data, String message){
-        ApiResponse response = new ApiResponse();
+    public <T> ResponseEntity<ApiResponse<T>> sendSuccessfulApiResponse(T data, String message){
+        ApiResponse<T> response = new ApiResponse<>();
         response.setStatus(true);
         response.setMessage(message);
         response.setData(data);
@@ -16,8 +16,8 @@ public class BaseApiStructure <T>{
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public ResponseEntity<ApiResponse<T>> sendFailedApiResponse(String message){
-        ApiResponse response = new ApiResponse();
+    public <T> ResponseEntity<ApiResponse<T>> sendFailedApiResponse(String message){
+        ApiResponse<T> response = new ApiResponse<>();
         response.setData(null);
         response.setStatus(false);
         response.setMessage(message);
@@ -25,8 +25,8 @@ public class BaseApiStructure <T>{
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    public ResponseEntity<ApiResponse<T>> formApiResponse(T data){
-        ApiResponse response = new ApiResponse();
+    public <T> ResponseEntity<ApiResponse<T>> formApiResponse(T data){
+        ApiResponse<T> response = new ApiResponse<>();
         response.setMessage("");
         response.setData(data);
         response.setStatus(true);
