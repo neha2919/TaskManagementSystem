@@ -18,7 +18,7 @@ public interface UserService {
 
     public void logoutUser();
     List<UserDto> getAllUsers();
-    User getUserById(UUID id);
+    User getUserByEmail(String email);
     User deleteUser(UUID id);
     User isActive(User user);
 

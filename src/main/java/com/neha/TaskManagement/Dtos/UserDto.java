@@ -36,16 +36,16 @@ public class UserDto {
     @Email(message = "Please enter valid email")
     private String email;
     private Long phoneNumber;
-    private boolean isAdmin;
+    private Boolean isAdmin;
     //add task dto list too.
     private List<TaskDto> tasks;
 
     public void setFullName(){
         this.fullName=firstName+" "+lastName;
     }
-//    public String getFullName(){
-//        return firstName+" "+lastName;
-//    }
+    public String getFullName(){
+        return firstName+" "+lastName;
+    }
 
     public static User dtoToEntity(UserDto dto){
         User entity = new User();
@@ -56,7 +56,7 @@ public class UserDto {
         entity.setEmail(dto.getEmail());
         entity.setId(dto.getId());
         entity.setUsername(dto.getUsername());
-        entity.setIsAdmin(dto.isAdmin());
+        entity.setIsAdmin(dto.isAdmin);
         entity.setPhoneNumber(dto.getPhoneNumber());
 
         //Each TaskDto in the DTO must be converted into a Task entity before being assigned to User. This requires custom logic, which is implemented either using streams or a loop.
@@ -84,6 +84,7 @@ public class UserDto {
         dto.setId(entity.getId());
         dto.setUsername(entity.getUsername());
         dto.setPhoneNumber(entity.getPhoneNumber());
+        dto.setIsAdmin(entity.getIsAdmin());
 
 //        if (dto.isAdmin()) {
 //            entity.setIsAdmin(true);
@@ -93,7 +94,7 @@ public class UserDto {
 
 //        If getIsAdmin() is null, it defaults to false.
 //        If getIsAdmin() is not null, it sets the value of isAdmin accordingly.
-        dto.setAdmin(entity.getIsAdmin() != null && entity.getIsAdmin());
+//        dto.setAdmin(entity.getIsAdmin() != null && entity.getIsAdmin());
 
         //set taskDto list too.
         if(entity.getTasks() != null){
