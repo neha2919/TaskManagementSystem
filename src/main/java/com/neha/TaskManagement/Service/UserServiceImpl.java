@@ -69,10 +69,7 @@ public class UserServiceImpl implements UserService{
 //        UserDto dto = UserDto.entityToDto(user); <- return this object instead of direct entity class.
         return UserDto.entityToDto(user);
     }
-    @Override
-    public void logoutUser() {
 
-    }
     @Override
     public List<UserDto> getAllUsers() {
         List<User> users = userRepository.findAll();
@@ -86,8 +83,8 @@ public class UserServiceImpl implements UserService{
         return userDto;
     }
     @Override
-    public User getUserById(UUID id) {
-        return userRepository.findById(id).orElseThrow(()->new RuntimeException("User not found"));
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User not found"));
     }
     @Override
     public UserDto updateUser(UUID userId, UserDto userDto) {
@@ -105,6 +102,16 @@ public class UserServiceImpl implements UserService{
             String encryptedPassword = PasswordEncryption.encrypt(userDto.getPassword());
             existingUser.setPassword(encryptedPassword);
         }
+        if (userDto.getFirstName() != null && !userDto.getFirstName().isEmpty()) {
+            existingUser.setFirstName(userDto.getFirstName());
+        }
+
+        if (userDto.getLastName() != null && !userDto.getLastName().isEmpty()) {
+            existingUser.setLastName(userDto.getLastName());
+        }
+
+        existingUser.setFullName();
+        existingUser.setIsAdmin(userDto.getIsAdmin());
 
         User updatedUser = userRepository.save(existingUser);
         return UserDto.entityToDto(updatedUser);
@@ -116,6 +123,10 @@ public class UserServiceImpl implements UserService{
         User userToBeDeleted = userRepository.findById(id).orElseThrow(()->new RuntimeException("User not found"));
         userRepository.delete(userToBeDeleted);
         return userToBeDeleted;
+    }
+    @Override
+    public void logoutUser() {
+
     }
 
     @Override
