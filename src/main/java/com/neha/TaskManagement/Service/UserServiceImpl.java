@@ -124,6 +124,13 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public List<UserDto> getUsersByTask(UUID taskId) {
+        return userRepository.findByTaskId(taskId)
+                .orElse(new ArrayList<>())
+                .stream().map(UserDto::entityToDto).toList();
+    }
+
+    @Override
     @Transactional
     public User deleteUser(UUID id) {
         User userToBeDeleted = userRepository.findById(id)

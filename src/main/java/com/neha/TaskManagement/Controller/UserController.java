@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@SuppressWarnings("rawtypes")
 @RestController
 @RequestMapping("api/users")
 public class UserController extends BaseApiStructure {
@@ -34,6 +35,7 @@ public class UserController extends BaseApiStructure {
     public UserDto loginUser(@Valid @RequestBody LoginRequestDto requestDto){
         return UserDto.entityToDto(userService.loginUser(requestDto));
     }
+    //we do not need any userid as path variable instead, user the userDto for the id/email.
     @PutMapping("/update/{userId}")
     public UserDto updateUser(@PathVariable UUID userId, @Valid @RequestBody UserDto userDto) {
         return userService.updateUser(userId, userDto);
@@ -54,5 +56,9 @@ public class UserController extends BaseApiStructure {
     @DeleteMapping("/{id}")
     public User deleteUser(@PathVariable UUID id){
         return userService.deleteUser(id);
+    }
+    @GetMapping("task/{taskId}/users")
+    public ResponseEntity getAllAssignedUsersByTask(@PathVariable("taskId")UUID taskId){
+        return sendSuccessfulApiResponse(userService.getUsersByTask(taskId),"All assigned users for current task.");
     }
 }

@@ -30,6 +30,7 @@ public class User {
     private String email;
     private Long phoneNumber;
     private Boolean isAdmin;
+    private String employeeId;
     //Many To Many mapping for Users to Task
     //This should be the owning side.
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -41,5 +42,11 @@ public class User {
     private List<Task> tasks; //list of task assigned to the user
     public void setFullName(){
         this.fullName=firstName+" "+lastName;
+    }
+
+    @PrePersist
+    public void onPrePersist(){
+        this.employeeId = "COMP"+this.email.hashCode();
+        this.fullName = this.firstName.trim()+" "+this.lastName.trim();
     }
 }

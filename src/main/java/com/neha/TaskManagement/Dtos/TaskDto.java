@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.neha.TaskManagement.Entity.Task;
 import com.neha.TaskManagement.Entity.User;
 import com.neha.TaskManagement.Model.Priority;
+import com.neha.TaskManagement.Model.Progress;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
@@ -29,14 +30,19 @@ public class TaskDto {
     @NotNull(message = "Please mention dua date")
     private LocalDate dueDate;
     @NotNull(message = "Please mention the priority (HIGH, MEDIUM OR LOW)")
-    @Enumerated(EnumType.STRING)
     private Priority priority;
+    //no need for UserDto, rather make it List<String> email. Please remove this and fix the logic accordingly.
     private List<UserDto> users;
+    //newly added fields
+    private List<String> email;
+    private LocalDate assignedOn;
+    private Progress progress;
+    private UUID parentTask;
+    private List<UUID> subTasks;
 
     public static Task dtoToEntity(TaskDto dto){
         Task entity = new Task();
         entity.setTaskId(dto.getTaskId());
-        entity.setEmpId(dto.getEmpId());
         entity.setTitle(dto.getTitle());
         entity.setDescription(dto.getDescription());
         entity.setStatus(dto.getStatus());
@@ -49,7 +55,40 @@ public class TaskDto {
             }
             entity.setUsers(userEntities);
         }
+        //we just assign the email in the user object as list. Now when we save this object in the service layer we just populate all the
+        //fields by findByEmail;
+        if (dto.getEmail()!=null || !dto.getEmail().isEmpty()){
+            entity.setUsers(dto.getEmail()
+                    .stream()
+                    .map(email -> {
+                        User assignedUser =  new User();
+                        assignedUser.setEmail(email);
+                        return assignedUser;
+                    }).toList());
+        }
+        entity.setAssignedOn(dto.getAssignedOn());
+        entity.setProgress(dto.getProgress());
+        //we just assign the taskId in the Task object. Now when we save this object in the service layer we just populate all the
+        //fields by findById;
+        if (dto.getParentTask()!=null){
+            Task parentTask = new Task();
+            parentTask.setTaskId(dto.getParentTask());
 
+            entity.setParentTask(parentTask);
+        }
+        //we just assign the taskId in the Task object as list. Now when we save this object in the service layer we just populate all the
+        //fields by findById;
+        if (dto.getSubTasks()!=null){
+            entity.setSubTasks(dto.getSubTasks()
+                    .stream()
+                    .map(subTaskId -> {
+                        Task subTask = new Task();
+                        subTask.setTaskId(subTaskId);
+
+                        return subTask;
+                    })
+                    .toList());
+        }
         return entity;
     }
 
@@ -57,7 +96,6 @@ public class TaskDto {
         TaskDto dto = new TaskDto();
 
         dto.setTaskId(entity.getTaskId());
-        dto.setEmpId(entity.getEmpId());
         dto.setTitle(entity.getTitle());
         dto.setDescription(entity.getDescription());
         dto.setStatus(entity.getStatus());
@@ -70,7 +108,21 @@ public class TaskDto {
             }
             dto.setUsers(userEntities);
         }
-
+        dto.setAssignedOn(entity.getAssignedOn());
+        dto.setProgress(entity.getProgress());
+        dto.setParentTask(entity.getParentTask()!=null ? entity.getParentTask().getTaskId() : null);
+        dto.setSubTasks(entity.getSubTasks()!=null ? entity.getSubTasks()
+                .stream()
+                .map(task -> {
+                    return task.getTaskId();
+                })
+                .toList():null);
+        dto.setEmail(entity.getUsers()!=null ? entity.getUsers()
+                .stream()
+                .map(user -> {
+                    return user.getEmail();
+                })
+                .toList():null);
         return dto;
     }
 }

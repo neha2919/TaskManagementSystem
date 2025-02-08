@@ -21,6 +21,6 @@ public interface UserService {
     User getUserByEmail(String email);
     User deleteUser(UUID id);
     User isActive(User user);
-
     UserDto updateUser(UUID userId, UserDto userDto);
+    List<UserDto> getUsersByTask(UUID taskId);
 }
