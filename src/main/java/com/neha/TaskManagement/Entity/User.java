@@ -9,6 +9,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name="users")
@@ -30,6 +32,7 @@ public class User {
     private String email;
     private Long phoneNumber;
     private Boolean isAdmin;
+    @Column(unique = true, nullable = false)
     private String employeeId;
     //Many To Many mapping for Users to Task
     //This should be the owning side.
@@ -45,8 +48,7 @@ public class User {
     }
 
     @PrePersist
-    public void onPrePersist(){
-        this.employeeId = "COMP"+this.email.hashCode();
-        this.fullName = this.firstName.trim()+" "+this.lastName.trim();
+    private void onPrePersist(){
+        this.employeeId = "NS"+this.email.hashCode();
     }
 }

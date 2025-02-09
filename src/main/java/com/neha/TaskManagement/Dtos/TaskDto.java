@@ -36,6 +36,8 @@ public class TaskDto {
     //newly added fields
     private List<String> email;
     private LocalDate assignedOn;
+    private String assignedBy;
+    private String createdBy;
     private Progress progress;
     private UUID parentTask;
     private List<UUID> subTasks;
@@ -67,7 +69,8 @@ public class TaskDto {
                     }).toList());
         }
         entity.setAssignedOn(dto.getAssignedOn());
-        entity.setProgress(dto.getProgress());
+        entity.setAssignedBy(dto.getAssignedBy());
+        entity.setCreatedBy(dto.getCreatedBy());
         //we just assign the taskId in the Task object. Now when we save this object in the service layer we just populate all the
         //fields by findById;
         if (dto.getParentTask()!=null){
@@ -109,6 +112,8 @@ public class TaskDto {
             dto.setUsers(userEntities);
         }
         dto.setAssignedOn(entity.getAssignedOn());
+        dto.setCreatedBy(entity.getCreatedBy());
+        dto.setAssignedBy(entity.getAssignedBy());
         dto.setProgress(entity.getProgress());
         dto.setParentTask(entity.getParentTask()!=null ? entity.getParentTask().getTaskId() : null);
         dto.setSubTasks(entity.getSubTasks()!=null ? entity.getSubTasks()

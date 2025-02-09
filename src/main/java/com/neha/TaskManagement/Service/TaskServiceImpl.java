@@ -3,15 +3,18 @@ package com.neha.TaskManagement.Service;
 import com.neha.TaskManagement.Dtos.TaskDto;
 import com.neha.TaskManagement.Entity.Task;
 import com.neha.TaskManagement.Exception.NotFoundException;
+import com.neha.TaskManagement.Exception.NullException;
 import com.neha.TaskManagement.Exception.UnauthorizedException;
 import com.neha.TaskManagement.Model.Progress;
 import com.neha.TaskManagement.Repository.TaskRepository;
 import com.neha.TaskManagement.Repository.UserRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -71,12 +74,32 @@ public class TaskServiceImpl implements TaskService{
     }
 
     @Override
-    public TaskDto createSubtask(UUID parentTaskId, List<Task> subTasks) {
-        return null;
+    public List<TaskDto> createSubtask(UUID parentTaskId, List<TaskDto> subTasks) {
+        //get the parent task
+        Task parentTask = taskRepository.findById(parentTaskId)
+                .orElseThrow(()->new NotFoundException("Task does not exists."));
+        //check if the subTasks is null || empty
+        if (subTasks==null || subTasks.isEmpty()) throw new NullException("Sub-task was empty. No task was created.");
+        if(parentTask.getSubTasks()==null) parentTask.setSubTasks(new ArrayList<>());
+        //convert dto to entity
+        List<Task> subTasksToBeSaved = new ArrayList<>();
+        for (TaskDto subTask : subTasks){
+            Task converted = TaskDto.dtoToEntity(subTask);
+            //child parentTask update
+            converted.setParentTask(parentTask);
+            //parent's subTask update
+            parentTask.getSubTasks().add(converted);
+
+            subTasksToBeSaved.add(converted);
+        }
+        parentTask = taskRepository.save(parentTask);
+        //List<taskDto> -> for-loop for converting the entity list to dto.
+        return parentTask.getSubTasks().stream().map(TaskDto :: entityToDto).toList();
     }
 
     /**
-     * Make a recursive progress calculation since we will have sub-tasks included and a sub-task can also have a sub task.
+     * Make a recursive progress calculation since we will have sub-tasks included and a sub-task can also have a sub-task.
+     * If the code doesnt runs, then fix the logic-i did this directly in this comment section.
      *  private double progressPercentage(String progress){
      *      if(task.progress == IN_PROGRESS) return 50.0;
      *      if(task.progress == COMPLETED) return 100.0
