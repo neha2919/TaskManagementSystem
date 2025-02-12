@@ -9,12 +9,12 @@ import com.neha.TaskManagement.Exception.UnauthorizedException;
 import com.neha.TaskManagement.Repository.UserRepository;
 import com.neha.TaskManagement.Security.PasswordEncryption;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private UserRepository userRepository;
     @Override
-    public User signupUser(UserDto userDto) {
+    public UserDto signupUser(@Valid UserDto userDto) {
         //dto to entity
 //        User admin = userRepository.findById(adminId).orElseThrow(()->new RuntimeException("Admin not found"));
 //        if(!Boolean.TRUE.equals(admin.getIsAdmin())){
@@ -36,15 +36,15 @@ public class UserServiceImpl implements UserService{
             throw new ConflictException("User already exists!");
         }
         String encryptedPassword = PasswordEncryption.encrypt(userDto.getPassword());
+        userDto.setPassword(encryptedPassword);
 
-        User newUser = UserDto.dtoToEntity(userDto);
-        newUser.setPassword(encryptedPassword);
+        User newUser = userRepository.save(UserDto.dtoToEntity(userDto));
 
-        return userRepository.save(UserDto.dtoToEntity(userDto));
+        return UserDto.entityToDto(newUser);
     }
 
     @Override
-    public User loginUser(LoginRequestDto request) {
+    public UserDto loginUser(LoginRequestDto request) {
         //first check if email or username is present. Check for @.
 //        if (request.getEmail().contains("@")) <- its email
         //else its a username. So, find the user accordingly.
@@ -61,18 +61,18 @@ public class UserServiceImpl implements UserService{
         }
 
         if (user.getPassword().equals(PasswordEncryption.encrypt(request.getPassword()))){
-            return user;
+            return UserDto.entityToDto(user);
         }
         throw new UnauthorizedException("Wrong username/password. Please try again.");
     }
 
-    @Override
-    public UserDto isAdmin(String email) {
+//    @Override
+    /*public UserDto isAdmin(String email) {
         User user = userRepository.findByEmailAndIsAdmin(email, true)
                 .orElseThrow(()->new NotFoundException("User does not exists."));
 //        UserDto dto = UserDto.entityToDto(user); <- return this object instead of direct entity class.
         return UserDto.entityToDto(user);
-    }
+    }*/
 
     @Override
     public List<UserDto> getAllUsers() {
@@ -87,13 +87,13 @@ public class UserServiceImpl implements UserService{
         return userDto;
     }
     @Override
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(()->new NotFoundException("User does not exists."));
+    public UserDto getUserByEmail(String email) {
+        return UserDto.entityToDto(userRepository.findByEmail(email)
+                .orElseThrow(()->new NotFoundException("User does not exists.")));
     }
     @Override
-    public UserDto updateUser(UUID userId, UserDto userDto) {
-        User existingUser = userRepository.findById(userId)
+    public UserDto updateUser(UserDto userDto) {
+        User existingUser = userRepository.findByEmail(userDto.getEmail())
                 .orElseThrow(() -> new NotFoundException("User does not exists."));
         if(userDto.getUsername() != null && !userDto.getUsername().isEmpty()){
             existingUser.setUsername(userDto.getUsername());
@@ -117,14 +117,14 @@ public class UserServiceImpl implements UserService{
         }
 
         existingUser.setFullName();
-        existingUser.setIsAdmin(userDto.getIsAdmin());
+//        existingUser.setIsAdmin(userDto.getIsAdmin());
 
         User updatedUser = userRepository.save(existingUser);
         return UserDto.entityToDto(updatedUser);
     }
 
     @Override
-    public List<UserDto> getUsersByTask(UUID taskId) {
+    public List<UserDto> getAssignedUsersByTask(UUID taskId) {
         return userRepository.findByTaskId(taskId)
                 .orElse(new ArrayList<>())
                 .stream().map(UserDto::entityToDto).toList();
@@ -132,6 +132,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
+    //change this to deactivate user
     public User deleteUser(UUID id) {
         User userToBeDeleted = userRepository.findById(id)
                 .orElseThrow(()->new NotFoundException("User does not exists."));

@@ -1,5 +1,6 @@
 package com.neha.TaskManagement.Controller;
 
+import com.neha.TaskManagement.BaseStructure.ApiResponse;
 import com.neha.TaskManagement.BaseStructure.BaseApiStructure;
 import com.neha.TaskManagement.Dtos.LoginRequestDto;
 import com.neha.TaskManagement.Dtos.UserDto;
@@ -7,7 +8,6 @@ import com.neha.TaskManagement.Entity.User;
 import com.neha.TaskManagement.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,37 +21,32 @@ public class UserController extends BaseApiStructure {
     @Autowired
     private UserService userService;
 
-    //Instead of directly calling the entity, we call UserDto. And we use @Valid annotation with RequestBody annotation.
+    //Instead of directly calling the entity, we call UserDto. And we use @Valid annotation with RequestBody annotation. - done
     @PostMapping("/signup")
-    public ResponseEntity<?> signupUser(@Valid @RequestBody UserDto userDto){
-        User newUser = userService.signupUser(userDto);
-        UserDto responseDto = UserDto.entityToDto(newUser);
-        return sendSuccessfulApiResponse(responseDto, "Successful signup");
-
-//        return new ResponseEntity<>(responseDto, HttpStatus.OK);
-//        return new ResponseEntity( HttpStatus.OK,(UserDto.entityToDto((userService.signupUser(userDto, adminId)))));
+    public ResponseEntity<ApiResponse<UserDto>> signupUser(@Valid @RequestBody UserDto userDto) {
+        return sendSuccessfulApiResponse(userService.signupUser(userDto), "Successful signup");
     }
     @PostMapping("/login")
-    public UserDto loginUser(@Valid @RequestBody LoginRequestDto requestDto){
-        return UserDto.entityToDto(userService.loginUser(requestDto));
+    public ResponseEntity<ApiResponse<UserDto>> loginUser(@Valid @RequestBody LoginRequestDto requestDto){
+        return sendSuccessfulApiResponse(userService.loginUser(requestDto), "Successful login");
     }
     //we do not need any userid as path variable instead, user the userDto for the id/email.
     @PutMapping("/update/{userId}")
-    public UserDto updateUser(@PathVariable UUID userId, @Valid @RequestBody UserDto userDto) {
-        return userService.updateUser(userId, userDto);
+    public ResponseEntity<ApiResponse<UserDto>> updateUser(@Valid @RequestBody UserDto userDto) {
+        return sendSuccessfulApiResponse(userService.updateUser(userDto), "User Profile Successfully Updated");
     }
-
-    @GetMapping("/isAdmin")
-    public UserDto isAdmin(@Valid @RequestParam String email){
-        return userService.isAdmin(email);
-    }
+// will be changing the admin logic as per the hierarchy
+//    @GetMapping("/isAdmin")
+//    public UserDto isAdmin(@Valid @RequestParam String email){
+//        return userService.isAdmin(email);
+//    }
     @GetMapping("/all")
-    public List<UserDto> getAllUsers(){
-        return userService.getAllUsers();
+    public ResponseEntity<ApiResponse<List<UserDto>>> getAllUsers(){
+        return sendSuccessfulApiResponse(userService.getAllUsers(), "List of all users");
     }
     @GetMapping("/email")
-    public User getUserByEmail(@RequestParam String email){
-        return userService.getUserByEmail(email);
+    public ResponseEntity<ApiResponse<UserDto>> getUserByEmail(@RequestParam String email){
+        return sendSuccessfulApiResponse(userService.getUserByEmail(email), "User Found");
     }
     @DeleteMapping("/{id}")
     public User deleteUser(@PathVariable UUID id){
@@ -59,6 +54,6 @@ public class UserController extends BaseApiStructure {
     }
     @GetMapping("task/{taskId}/users")
     public ResponseEntity getAllAssignedUsersByTask(@PathVariable("taskId")UUID taskId){
-        return sendSuccessfulApiResponse(userService.getUsersByTask(taskId),"All assigned users for current task.");
+        return sendSuccessfulApiResponse(userService.getAssignedUsersByTask(taskId),"All assigned users for current task.");
     }
 }

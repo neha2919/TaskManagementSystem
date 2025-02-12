@@ -22,8 +22,9 @@ public class TaskController extends BaseApiStructure {
     @Autowired
     private TaskService taskService;
     @PostMapping("/create")
-    public ResponseEntity createTask(@RequestBody Task task, @RequestParam String email){
-        return sendSuccessfulApiResponse(taskService.createTask(task, email),"Task Initiated.");
+    public ResponseEntity<ApiResponse<TaskDto>> createTask(@RequestBody TaskDto taskdto, @RequestParam String email){
+        TaskDto newTask = taskService.createTask(taskdto, email);
+        return sendSuccessfulApiResponse(newTask,"Task Initiated.");
     }
 
     @GetMapping("{taskId}")
@@ -36,10 +37,10 @@ public class TaskController extends BaseApiStructure {
         return sendSuccessfulApiResponse(taskService.getAllTasks(email),"All assigned task for user.");
     }
 
-    @PutMapping("update")
-    public ResponseEntity updateTask(@RequestBody Task task, @RequestParam String email){
-        return sendSuccessfulApiResponse(taskService.updateTask(task, email),"Task updated.");
-    }
+//    @PutMapping("update")
+//    public ResponseEntity updateTask(@RequestBody TaskDto taskDto, @RequestParam String email){
+//        return sendSuccessfulApiResponse(taskService.updateTask(taskDto, email),"Task updated.");
+//    }
     @PostMapping("{parentTask}/create-subtask")
     public ResponseEntity createSubtask(@PathVariable("parentTaskId")UUID parentTaskId, @RequestBody List<Task> subTask){
         return sendSuccessfulApiResponse(taskService.createSubtask(parentTaskId,subTask),"Sub-Task assigned and created.");

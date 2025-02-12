@@ -21,7 +21,7 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.UUID) //GenerationType.IDENTITY - it works well with the auto increment feature
     private UUID taskId;
     //remove status.
-    private String title, description, status;
+    private String title, description;
     private LocalDate assignedOn;
     private LocalDate dueDate;
     //Addition of task priority enum class.
@@ -56,7 +56,7 @@ public class Task {
     private List<Task> subTasks;
 
     @PrePersist
-    private void onPrePersis(){
+    private void onPrePersist(){
         /**
          *
          * IT IS NOT NECESSARY TO ADD THE LOGIC HERE ONLY, YOU CAN ADD IT TO UPDATE TASK SERVICE TOO. IT IS UP TO YOU WHERE YOU WANT TO ADD.

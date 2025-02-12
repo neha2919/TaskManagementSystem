@@ -1,7 +1,9 @@
 package com.neha.TaskManagement.Service;
 
 import com.neha.TaskManagement.Dtos.TaskDto;
+import com.neha.TaskManagement.Dtos.UserDto;
 import com.neha.TaskManagement.Entity.Task;
+import com.neha.TaskManagement.Entity.User;
 import com.neha.TaskManagement.Exception.NotFoundException;
 import com.neha.TaskManagement.Exception.UnauthorizedException;
 import com.neha.TaskManagement.Model.Progress;
@@ -10,6 +12,7 @@ import com.neha.TaskManagement.Repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,15 +25,15 @@ public class TaskServiceImpl implements TaskService{
     @Autowired
     private UserRepository userRepository;
 
-    //for api access, once the token based system is configured, there would be no need to additionally check for isAdmin.
+    //for api access, once the token based system is configured, there would be no need to additionally check for isAdmin. - understood
     @Override
-    public TaskDto createTask(Task task, String email) {
+    public TaskDto createTask(TaskDto taskDto, String email) {
         userRepository.findByEmailAndIsAdmin(email, true)
                 .orElseThrow(() -> new NotFoundException("User is not an admin or not found"));
         //by default it is pending.
-        task.setAssignedOn(LocalDate.now());
-        task.setProgress(Progress.PENDING);
-        return TaskDto.entityToDto(taskRepository.save(task));
+        taskDto.setAssignedOn(LocalDate.now());
+        taskDto.setProgress(Progress.PENDING);
+        return TaskDto.entityToDto(taskRepository.save(TaskDto.dtoToEntity(taskDto)));
     }
 
     @Override
@@ -55,11 +58,30 @@ public class TaskServiceImpl implements TaskService{
     }
 
     //how can only admin update task? I am assigned a task how then am I not supposed to update its progress/status?
-    @Override
-    public Task updateTask(Task task, String email) {
-        userRepository.findByEmailAndIsAdmin(email, true).orElseThrow(() -> new UnauthorizedException("Only admin can update task"));
-        return taskRepository.save(task);
-    }
+    //admin can edit if required after assigning the task and employee can only update the status. If i will give full access to employee to edit then the employee will be able to edit the dueDate, title and everything which should be restricted.
+
+    /**@Override
+    public TaskDto updateTask(TaskDto taskDto, String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(()->new NotFoundException("User not found"));
+        Task existingTask = taskRepository.findById(taskDto.getTaskId()).orElseThrow(()-> new NotFoundException("Task not found"));
+
+        if(user.getIsAdmin){
+            existingTask.setTitle(taskDto.getTitle());
+            existingTask.setDescription(taskDto.getDescription());
+            existingTask.setProgress(taskDto.getProgress());
+            existingTask.setDueDate(taskDto.getDueDate());
+            existingTask.setPriority(taskDto.getPriority());
+        }
+        else if(existingTask.getAssignedUser() != null && existingTask.getAssignedUser().equals(user)){
+            existingTask.setProgress(taskDto.getProgress());
+        }
+        else{
+            throw new UnauthorizedException("User do not have the permission to update task");
+        }
+        Task updatedTask = taskRepository.save(existingTask);
+        return TaskDto.entityToDto(updatedTask);
+
+    }**/
 
     @Override
     @Transactional
@@ -89,12 +111,12 @@ public class TaskServiceImpl implements TaskService{
      *       }
      *       int subCount = task.getSubTask().size();
      *       double percentage = 0.0;
-     *
+
      *       recursive case:-
      *       for(Task task : task.getSubTask){
      *           percentage = percentage + calculateProgressPercentage(task);
      *       }
-     *
+
      *       return percentage/subCount;
      *   }
      *

@@ -26,13 +26,15 @@ public class TaskDto {
     @NotNull(message = "Please mention the Employee Id")
     private Long empId;
     @NotNull(message = "Please mention the required details to proceed")
-    private String title, description, status;
+    private String title, description;
     @NotNull(message = "Please mention dua date")
     private LocalDate dueDate;
     @NotNull(message = "Please mention the priority (HIGH, MEDIUM OR LOW)")
     private Priority priority;
+
     //no need for UserDto, rather make it List<String> email. Please remove this and fix the logic accordingly.
     private List<UserDto> users;
+
     //newly added fields
     private List<String> email;
     private LocalDate assignedOn;
@@ -45,7 +47,6 @@ public class TaskDto {
         entity.setTaskId(dto.getTaskId());
         entity.setTitle(dto.getTitle());
         entity.setDescription(dto.getDescription());
-        entity.setStatus(dto.getStatus());
         entity.setDueDate(dto.getDueDate());
         entity.setPriority(dto.getPriority());
         if(dto.getUsers() != null){
@@ -98,7 +99,6 @@ public class TaskDto {
         dto.setTaskId(entity.getTaskId());
         dto.setTitle(entity.getTitle());
         dto.setDescription(entity.getDescription());
-        dto.setStatus(entity.getStatus());
         dto.setDueDate(entity.getDueDate());
         dto.setPriority(entity.getPriority());
         if(entity.getUsers() != null){

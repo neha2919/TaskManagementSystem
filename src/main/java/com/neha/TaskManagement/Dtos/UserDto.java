@@ -3,10 +3,6 @@ package com.neha.TaskManagement.Dtos;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.neha.TaskManagement.Entity.Task;
 import com.neha.TaskManagement.Entity.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -39,10 +35,6 @@ public class UserDto {
     private Boolean isAdmin;
     //add task dto list too.
     private List<TaskDto> tasks;
-
-    public void setFullName(){
-        this.fullName=firstName+" "+lastName;
-    }
     public String getFullName(){
         return firstName+" "+lastName;
     }
@@ -56,7 +48,7 @@ public class UserDto {
         entity.setEmail(dto.getEmail());
         entity.setId(dto.getId());
         entity.setUsername(dto.getUsername());
-        entity.setIsAdmin(dto.isAdmin);
+//        entity.setIsAdmin(dto.isAdmin);
         entity.setPhoneNumber(dto.getPhoneNumber());
 
         //Each TaskDto in the DTO must be converted into a Task entity before being assigned to User. This requires custom logic, which is implemented either using streams or a loop.
@@ -84,7 +76,7 @@ public class UserDto {
         dto.setId(entity.getId());
         dto.setUsername(entity.getUsername());
         dto.setPhoneNumber(entity.getPhoneNumber());
-        dto.setIsAdmin(entity.getIsAdmin());
+//        dto.setIsAdmin(entity.getIsAdmin());
 
 //        if (dto.isAdmin()) {
 //            entity.setIsAdmin(true);

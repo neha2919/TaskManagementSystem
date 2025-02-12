@@ -7,10 +7,11 @@ import java.util.List;
 import java.util.UUID;
 
 public interface TaskService {
-    TaskDto createTask(Task task, String email);
+    TaskDto createTask(TaskDto taskDto, String email);
     TaskDto getTaskById(UUID taskId, String email);
     List<TaskDto> getAllTasks(String email);
-    Task updateTask(Task task, String email);
+
+    /**TaskDto updateTask(TaskDto task, String email);**/
     Task deleteTask(UUID taskId, String email);
     TaskDto createSubtask(UUID parentTaskId, List<Task> subTasks);
 

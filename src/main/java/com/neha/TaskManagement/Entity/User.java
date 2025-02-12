@@ -5,10 +5,11 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.management.relation.Role;
 
 @Entity
 @Table(name="users")
@@ -29,8 +30,24 @@ public class User {
     @Email(message = "Please enter valid email")
     private String email;
     private Long phoneNumber;
-    private Boolean isAdmin;
+//    private Boolean isAdmin;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
     private String employeeId;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+
+    @ManyToOne
+    @JoinColumn(name = "sub_department_id")
+    private SubDepartment subDepartment;
+
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private User manager;
+
     //Many To Many mapping for Users to Task
     //This should be the owning side.
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -45,6 +62,7 @@ public class User {
     }
 
     @PrePersist
+
     public void onPrePersist(){
         this.employeeId = "COMP"+this.email.hashCode();
         this.fullName = this.firstName.trim()+" "+this.lastName.trim();

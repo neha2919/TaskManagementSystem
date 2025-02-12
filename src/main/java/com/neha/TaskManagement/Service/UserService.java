@@ -8,19 +8,17 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    User signupUser(UserDto userDto);
+    UserDto signupUser(UserDto userDto);
 //    User loginUser(LoginRequest request);
     //User isAdmin(Long id);
+    UserDto loginUser(LoginRequestDto requestdto);
 
-    User loginUser(LoginRequestDto requestdto);
-
-    UserDto isAdmin(String email);
-
+//    UserDto isAdmin(String email);
     public void logoutUser();
     List<UserDto> getAllUsers();
-    User getUserByEmail(String email);
+    UserDto getUserByEmail(String email);
     User deleteUser(UUID id);
     User isActive(User user);
-    UserDto updateUser(UUID userId, UserDto userDto);
-    List<UserDto> getUsersByTask(UUID taskId);
+    UserDto updateUser(UserDto userDto);
+    List<UserDto> getAssignedUsersByTask(UUID taskId);
 }
