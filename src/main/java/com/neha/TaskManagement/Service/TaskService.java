@@ -13,6 +13,6 @@ public interface TaskService {
 
     /**TaskDto updateTask(TaskDto task, String email);**/
     Task deleteTask(UUID taskId, String email);
-    TaskDto createSubtask(UUID parentTaskId, List<Task> subTasks);
+    List<TaskDto> createSubtask(UUID parentTaskId, List<TaskDto> subTasks);
 
 }

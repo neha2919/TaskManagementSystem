@@ -7,7 +7,9 @@ import com.neha.TaskManagement.Entity.Task;
 import com.neha.TaskManagement.Service.TaskService;
 import com.neha.TaskManagement.Service.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +23,7 @@ import java.util.UUID;
 public class TaskController extends BaseApiStructure {
     @Autowired
     private TaskService taskService;
+    //convert all task to TaskDto and apply @Valid where needed.
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<TaskDto>> createTask(@RequestBody TaskDto taskdto, @RequestParam String email){
         TaskDto newTask = taskService.createTask(taskdto, email);
@@ -42,7 +45,7 @@ public class TaskController extends BaseApiStructure {
 //        return sendSuccessfulApiResponse(taskService.updateTask(taskDto, email),"Task updated.");
 //    }
     @PostMapping("{parentTask}/create-subtask")
-    public ResponseEntity createSubtask(@PathVariable("parentTaskId")UUID parentTaskId, @RequestBody List<Task> subTask){
+    public ResponseEntity createSubtask(@PathVariable("parentTaskId")UUID parentTaskId, @RequestBody List<@Valid TaskDto> subTask){
         return sendSuccessfulApiResponse(taskService.createSubtask(parentTaskId,subTask),"Sub-Task assigned and created.");
     }
     @DeleteMapping("{taskId}")

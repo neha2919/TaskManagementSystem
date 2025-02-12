@@ -46,13 +46,13 @@ public class Task {
     /**
      * If a task will be a sub-task, the parent task will be populated. Many(Task) to One(parentTask)
      **/
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "parent_task")
     private Task parentTask;
     /**
      * Multiple sub-tasks with the same parent task. One(Task) to Many(subTasks)
      **/
-    @OneToMany(mappedBy = "parentTask",orphanRemoval = true)
+    @OneToMany(mappedBy = "parentTask",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Task> subTasks;
 
     @PrePersist
