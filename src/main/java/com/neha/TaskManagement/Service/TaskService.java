@@ -11,8 +11,8 @@ public interface TaskService {
     TaskDto getTaskById(UUID taskId, String email);
     List<TaskDto> getAllTasks(String email);
 
-    /**TaskDto updateTask(TaskDto task, String email);**/
+    TaskDto updateTask(TaskDto task, String email);
     Task deleteTask(UUID taskId, String email);
-    List<TaskDto> createSubtask(UUID parentTaskId, List<TaskDto> subTasks);
+    List<TaskDto> createSubtask(String email, UUID parentTaskId, List<TaskDto> subTasks);
 
 }

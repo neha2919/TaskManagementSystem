@@ -8,6 +8,7 @@ import com.neha.TaskManagement.Exception.NotFoundException;
 import com.neha.TaskManagement.Exception.NullException;
 import com.neha.TaskManagement.Exception.UnauthorizedException;
 import com.neha.TaskManagement.Model.Progress;
+import com.neha.TaskManagement.Model.Role;
 import com.neha.TaskManagement.Repository.TaskRepository;
 import com.neha.TaskManagement.Repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -27,12 +28,17 @@ public class TaskServiceImpl implements TaskService{
     private TaskRepository taskRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserService userService;
 
     //for api access, once the token based system is configured, there would be no need to additionally check for isAdmin. - understood
     @Override
     public TaskDto createTask(TaskDto taskDto, String email) {
-        userRepository.findByEmailAndIsAdmin(email, true)
-                .orElseThrow(() -> new NotFoundException("User is not an admin or not found"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        if(user.getRole() != Role.SUPER_ADMIN && user.getRole() != Role.DEPT_ADMIN){
+            throw new NotFoundException("User is not an Admin");
+        }
         //by default it is pending.
         taskDto.setAssignedOn(LocalDate.now());
         taskDto.setProgress(Progress.PENDING);
@@ -41,16 +47,23 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public TaskDto getTaskById(UUID taskId, String email) {
-        userRepository.findByEmailAndIsAdmin(email, true)
-                .orElseThrow(() -> new UnauthorizedException("Only admin can view tasks"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UnauthorizedException("Task does not exist"));
+        if(user.getRole() != Role.SUPER_ADMIN){
+            throw new NotFoundException("User is not an Admin");
+        }
         return TaskDto.entityToDto(taskRepository.findById(taskId)
                 .orElseThrow(()->new NotFoundException("Task not found")));
     }
 
     @Override
     public List<TaskDto> getAllTasks(String email) {
-        userRepository.findByEmailAndIsAdmin(email, true).orElseThrow(() -> new NotFoundException("Only admin can view all tasks"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("No Task Found"));
+        if(user.getRole() != Role.SUPER_ADMIN){
+            throw new NotFoundException("User is not an Admin");
+        }
         return taskRepository.findAll().stream().map(TaskDto::entityToDto).toList();
+
         //if you have difficulty to understand the above, follow the below code for reference
 //        return taskRepository.findAll()
 //                .stream()
@@ -60,22 +73,24 @@ public class TaskServiceImpl implements TaskService{
 //                .toList();
     }
 
+
     //how can only admin update task? I am assigned a task how then am I not supposed to update its progress/status?
     //admin can edit if required after assigning the task and employee can only update the status. If i will give full access to employee to edit then the employee will be able to edit the dueDate, title and everything which should be restricted.
 
-    /**@Override
+    @Override
     public TaskDto updateTask(TaskDto taskDto, String email) {
         User user = userRepository.findByEmail(email).orElseThrow(()->new NotFoundException("User not found"));
         Task existingTask = taskRepository.findById(taskDto.getTaskId()).orElseThrow(()-> new NotFoundException("Task not found"));
 
-        if(user.getIsAdmin){
+        if(user.getRole() == Role.DEPT_ADMIN || user.getRole() == Role.SUB_DEPT_ADMIN){
             existingTask.setTitle(taskDto.getTitle());
             existingTask.setDescription(taskDto.getDescription());
             existingTask.setProgress(taskDto.getProgress());
             existingTask.setDueDate(taskDto.getDueDate());
             existingTask.setPriority(taskDto.getPriority());
         }
-        else if(existingTask.getAssignedUser() != null && existingTask.getAssignedUser().equals(user)){
+        List<User> assignedUser = userService.getAssignedUsersByTask(existingTask.getTaskId())
+        if(assignedUser.contains(s)){
             existingTask.setProgress(taskDto.getProgress());
         }
         else{
@@ -84,19 +99,27 @@ public class TaskServiceImpl implements TaskService{
         Task updatedTask = taskRepository.save(existingTask);
         return TaskDto.entityToDto(updatedTask);
 
-    }**/
+    }
 
     @Override
     @Transactional
     public Task deleteTask(UUID taskId, String email) {
-        userRepository.findByEmailAndIsAdmin(email, true).orElseThrow(() -> new UnauthorizedException("Only admin can delete tasks"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("Not found"));
+        if(user.getRole() != Role.SUPER_ADMIN){
+            throw new UnauthorizedException("User is not an Admin");
+        }
         Task taskToBeDeleted = taskRepository.findById(taskId).orElseThrow(()->new NotFoundException("Task id does not exist"));
         taskRepository.delete(taskToBeDeleted);
         return taskToBeDeleted;
     }
 
     @Override
-    public List<TaskDto> createSubtask(UUID parentTaskId, List<TaskDto> subTasks) {
+    public List<TaskDto> createSubtask(String email, UUID parentTaskId, List<TaskDto> subTasks) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("Not found"));
+        if(user.getRole() != Role.DEPT_ADMIN && user.getRole() != Role.SUB_DEPT_ADMIN){
+            throw new UnauthorizedException("User is not authorized to create subtasks");
+        }
+
         //get the parent task
         Task parentTask = taskRepository.findById(parentTaskId)
                 .orElseThrow(()->new NotFoundException("Task does not exists."));

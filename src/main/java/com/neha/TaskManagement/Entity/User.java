@@ -3,15 +3,13 @@ package com.neha.TaskManagement.Entity;
 import java.util.List;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.neha.TaskManagement.Model.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.LoggerFactory;
 
-import javax.management.relation.Role;
 
 @Entity
 @Table(name="users")
@@ -32,23 +30,18 @@ public class User {
     @Email(message = "Please enter valid email")
     private String email;
     private Long phoneNumber;
-<<<<<<< HEAD
-//    private Boolean isAdmin;
+//  private Boolean isAdmin;
 
     @Enumerated(EnumType.STRING)
     private Role role;
-=======
-    private Boolean isAdmin;
-    @Column(unique = true, nullable = false)
->>>>>>> 1253f55ee353bf62197bcd5938cd3b778e2f81c2
     private String employeeId;
 
     @ManyToOne
-    @JoinColumn(name = "department_id")
+    @JoinColumn(name = "department")
     private Department department;
 
     @ManyToOne
-    @JoinColumn(name = "sub_department_id")
+    @JoinColumn(name = "subDepartment")
     private SubDepartment subDepartment;
 
     @ManyToOne
@@ -69,14 +62,9 @@ public class User {
     }
 
     @PrePersist
-<<<<<<< HEAD
 
     public void onPrePersist(){
         this.employeeId = "COMP"+this.email.hashCode();
         this.fullName = this.firstName.trim()+" "+this.lastName.trim();
-=======
-    private void onPrePersist(){
-        this.employeeId = "NS"+this.email.hashCode();
->>>>>>> 1253f55ee353bf62197bcd5938cd3b778e2f81c2
     }
 }

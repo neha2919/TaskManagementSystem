@@ -24,10 +24,10 @@ public class SubDepartment {
     private String subDeptName;
 
     @ManyToOne
-    @JoinColumn(name = "department_id", nullable = false)
+    @JoinColumn(name = "department", nullable = false)
     private Department department;
 
-    @OneToMany(mappedBy = "subdepartment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "subDepartment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<User> users;
 
 }
