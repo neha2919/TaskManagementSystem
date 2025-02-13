@@ -13,7 +13,8 @@ public interface UserService {
     //User isAdmin(Long id);
     UserDto loginUser(LoginRequestDto requestdto);
 
-//    UserDto isAdmin(String email);
+    UserDto assignRoleToUser(String email, String roleName);
+
     public void logoutUser();
     List<UserDto> getAllUsers();
     UserDto getUserByEmail(String email);

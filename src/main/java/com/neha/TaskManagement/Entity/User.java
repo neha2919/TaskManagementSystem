@@ -1,6 +1,7 @@
 package com.neha.TaskManagement.Entity;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 
-import javax.management.relation.Role;
+
 
 @Entity
 @Table(name="users")
@@ -32,15 +33,11 @@ public class User {
     @Email(message = "Please enter valid email")
     private String email;
     private Long phoneNumber;
-<<<<<<< HEAD
-//    private Boolean isAdmin;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
-=======
-    private Boolean isAdmin;
+    @ManyToMany
+    private Set<UserRole> roles;
+
     @Column(unique = true, nullable = false)
->>>>>>> 1253f55ee353bf62197bcd5938cd3b778e2f81c2
     private String employeeId;
 
     @ManyToOne
@@ -69,14 +66,13 @@ public class User {
     }
 
     @PrePersist
-<<<<<<< HEAD
 
-    public void onPrePersist(){
-        this.employeeId = "COMP"+this.email.hashCode();
-        this.fullName = this.firstName.trim()+" "+this.lastName.trim();
-=======
-    private void onPrePersist(){
-        this.employeeId = "NS"+this.email.hashCode();
->>>>>>> 1253f55ee353bf62197bcd5938cd3b778e2f81c2
+    public void onPrePersist() {
+        this.employeeId = "COMP" + this.email.hashCode();
+        this.fullName = this.firstName.trim() + " " + this.lastName.trim();
     }
+
+//    private void onPrePersist(){
+//        this.employeeId = "NS"+this.email.hashCode();
+//    }
 }

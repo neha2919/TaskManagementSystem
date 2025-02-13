@@ -15,11 +15,12 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String username);
-    Optional<User> findByEmailAndIsAdmin(String email, Boolean isAdmin);
+//    Optional<User> findByEmailAndIsAdmin(String email, Boolean isAdmin);
     Optional<User> findById(UUID id);
+
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
-    Optional<List<User>> findByTaskId(UUID uuid);
+    Optional<List<User>> findByTasks_TaskId(UUID taskId);
 }
 
 //@Query(value = "select * from users where email = :email and Admin = :isAdmin", nativeQuery = true)

@@ -56,4 +56,5 @@ public class UserController extends BaseApiStructure {
     public ResponseEntity getAllAssignedUsersByTask(@PathVariable("taskId")UUID taskId){
         return sendSuccessfulApiResponse(userService.getAssignedUsersByTask(taskId),"All assigned users for current task.");
     }
+
 }

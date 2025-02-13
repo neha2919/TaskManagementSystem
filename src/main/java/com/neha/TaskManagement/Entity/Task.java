@@ -19,6 +19,7 @@ import java.util.UUID;
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID) //GenerationType.IDENTITY - it works well with the auto increment feature
+    @Column(nullable = false, unique = true)
     private UUID taskId;
     //remove status.
     private String title, description;

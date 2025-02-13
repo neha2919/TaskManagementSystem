@@ -31,8 +31,8 @@ public class TaskServiceImpl implements TaskService{
     //for api access, once the token based system is configured, there would be no need to additionally check for isAdmin. - understood
     @Override
     public TaskDto createTask(TaskDto taskDto, String email) {
-        userRepository.findByEmailAndIsAdmin(email, true)
-                .orElseThrow(() -> new NotFoundException("User is not an admin or not found"));
+//        userRepository.findByEmailAndIsAdmin(email, true)
+//                .orElseThrow(() -> new NotFoundException("User is not an admin or not found"));
         //by default it is pending.
         taskDto.setAssignedOn(LocalDate.now());
         taskDto.setProgress(Progress.PENDING);
@@ -41,15 +41,15 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public TaskDto getTaskById(UUID taskId, String email) {
-        userRepository.findByEmailAndIsAdmin(email, true)
-                .orElseThrow(() -> new UnauthorizedException("Only admin can view tasks"));
+//        userRepository.findByEmailAndIsAdmin(email, true)
+//                .orElseThrow(() -> new UnauthorizedException("Only admin can view tasks"));
         return TaskDto.entityToDto(taskRepository.findById(taskId)
                 .orElseThrow(()->new NotFoundException("Task not found")));
     }
 
     @Override
     public List<TaskDto> getAllTasks(String email) {
-        userRepository.findByEmailAndIsAdmin(email, true).orElseThrow(() -> new NotFoundException("Only admin can view all tasks"));
+//        userRepository.findByEmailAndIsAdmin(email, true).orElseThrow(() -> new NotFoundException("Only admin can view all tasks"));
         return taskRepository.findAll().stream().map(TaskDto::entityToDto).toList();
         //if you have difficulty to understand the above, follow the below code for reference
 //        return taskRepository.findAll()
@@ -89,7 +89,7 @@ public class TaskServiceImpl implements TaskService{
     @Override
     @Transactional
     public Task deleteTask(UUID taskId, String email) {
-        userRepository.findByEmailAndIsAdmin(email, true).orElseThrow(() -> new UnauthorizedException("Only admin can delete tasks"));
+//        userRepository.findByEmailAndIsAdmin(email, true).orElseThrow(() -> new UnauthorizedException("Only admin can delete tasks"));
         Task taskToBeDeleted = taskRepository.findById(taskId).orElseThrow(()->new NotFoundException("Task id does not exist"));
         taskRepository.delete(taskToBeDeleted);
         return taskToBeDeleted;

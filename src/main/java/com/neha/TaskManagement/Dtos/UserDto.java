@@ -3,6 +3,7 @@ package com.neha.TaskManagement.Dtos;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.neha.TaskManagement.Entity.Task;
 import com.neha.TaskManagement.Entity.User;
+import com.neha.TaskManagement.Entity.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,9 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import javax.management.relation.Role;
+import java.util.*;
 
 @Data
 @AllArgsConstructor
@@ -32,9 +32,9 @@ public class UserDto {
     @Email(message = "Please enter valid email")
     private String email;
     private Long phoneNumber;
-    private Boolean isAdmin;
     //add task dto list too.
     private List<TaskDto> tasks;
+    private Set<String> roles;
     public String getFullName(){
         return firstName+" "+lastName;
     }
@@ -48,7 +48,6 @@ public class UserDto {
         entity.setEmail(dto.getEmail());
         entity.setId(dto.getId());
         entity.setUsername(dto.getUsername());
-//        entity.setIsAdmin(dto.isAdmin);
         entity.setPhoneNumber(dto.getPhoneNumber());
 
         //Each TaskDto in the DTO must be converted into a Task entity before being assigned to User. This requires custom logic, which is implemented either using streams or a loop.
@@ -61,7 +60,6 @@ public class UserDto {
             }
             entity.setTasks(tasksEntities);
         }
-
         return entity;
     }
 
@@ -76,13 +74,6 @@ public class UserDto {
         dto.setId(entity.getId());
         dto.setUsername(entity.getUsername());
         dto.setPhoneNumber(entity.getPhoneNumber());
-//        dto.setIsAdmin(entity.getIsAdmin());
-
-//        if (dto.isAdmin()) {
-//            entity.setIsAdmin(true);
-//        } else {
-//            entity.setIsAdmin(false);
-//        }
 
 //        If getIsAdmin() is null, it defaults to false.
 //        If getIsAdmin() is not null, it sets the value of isAdmin accordingly.
@@ -96,7 +87,13 @@ public class UserDto {
             }
             dto.setTasks(taskEntities);
         }
-
+        if(entity.getRoles() != null){
+            Set<String> roleNames = new HashSet<>();
+            for(UserRole role : entity.getRoles()){
+                roleNames.add(role.getRoleName());
+            }
+            dto.setRoles(roleNames);
+        }
         return  dto;
     }
 }

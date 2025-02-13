@@ -2,10 +2,13 @@ package com.neha.TaskManagement.Service;
 
 import com.neha.TaskManagement.Dtos.LoginRequestDto;
 import com.neha.TaskManagement.Dtos.UserDto;
+
+import com.neha.TaskManagement.Entity.UserRole;
 import com.neha.TaskManagement.Entity.User;
 import com.neha.TaskManagement.Exception.ConflictException;
 import com.neha.TaskManagement.Exception.NotFoundException;
 import com.neha.TaskManagement.Exception.UnauthorizedException;
+import com.neha.TaskManagement.Repository.UserRoleRepository;
 import com.neha.TaskManagement.Repository.UserRepository;
 import com.neha.TaskManagement.Security.PasswordEncryption;
 import jakarta.transaction.Transactional;
@@ -19,9 +22,11 @@ import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService{
-
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+
     @Override
     public UserDto signupUser(@Valid UserDto userDto) {
         //dto to entity
@@ -125,7 +130,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<UserDto> getAssignedUsersByTask(UUID taskId) {
-        return userRepository.findByTaskId(taskId)
+        return userRepository.findByTasks_TaskId(taskId)
                 .orElse(new ArrayList<>())
                 .stream().map(UserDto::entityToDto).toList();
     }
@@ -139,11 +144,21 @@ public class UserServiceImpl implements UserService{
         userRepository.delete(userToBeDeleted);
         return userToBeDeleted;
     }
+
+    @Override
+    public UserDto assignRoleToUser(String email, String roleName){
+        User user = userRepository.findByEmail(email).orElseThrow(()->new NotFoundException("User not found"));
+        UserRole userRole = userRoleRepository.findByRoleName(roleName).orElseThrow(()->new NotFoundException("Role not found"));
+
+        user.getRoles().add(userRole);
+        User updatedUser = userRepository.save(user);
+
+        return UserDto.entityToDto(updatedUser);
+    }
     @Override
     public void logoutUser() {
 
     }
-
     @Override
     public User isActive(User user) {
         return null;
