@@ -36,7 +36,7 @@ public class Task {
     //calculates the percentage of the task completion.
     private Double progressPercentage;
     //Many to Many tasks to users
-    @ManyToMany(mappedBy = "tasks", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "tasks", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<User> users;
     /**
      * if a task is assigned as "Develop Backend for user authentication"

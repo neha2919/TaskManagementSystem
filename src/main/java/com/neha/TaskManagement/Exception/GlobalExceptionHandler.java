@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+@SuppressWarnings("rawtypes")
 @ControllerAdvice
 public class GlobalExceptionHandler extends BaseApiStructure {
     @ExceptionHandler(Exception.class)
@@ -31,5 +32,9 @@ public class GlobalExceptionHandler extends BaseApiStructure {
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity conflictExceptionHandler(ConflictException ce){
         return sendExceptionResponse(ce.getMessage(),HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler(NotAllowedException.class)
+    public ResponseEntity notAllowedExceptionHandler(NotAllowedException nae){
+        return sendExceptionResponse(nae.getMessage(),HttpStatus.NOT_ACCEPTABLE);
     }
 }

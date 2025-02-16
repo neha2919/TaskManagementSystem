@@ -24,7 +24,7 @@ import java.util.UUID;
 public class TaskDto {
 
     private UUID taskId;
-    @NotNull(message = "Please mention the Employee Id")
+//    @NotNull(message = "Please mention the Employee Id")
     private Long empId;
     @NotNull(message = "Please mention the required details to proceed")
     private String title, description;
@@ -37,7 +37,7 @@ public class TaskDto {
     private List<UserDto> users;
 
     //newly added fields
-    private List<String> email;
+    private List<String> username;
     private LocalDate assignedOn;
     private String assignedBy;
     private String createdBy;
@@ -61,12 +61,12 @@ public class TaskDto {
         }
         //we just assign the email in the user object as list. Now when we save this object in the service layer we just populate all the
         //fields by findByEmail;
-        if (dto.getEmail()!=null || !dto.getEmail().isEmpty()){
-            entity.setUsers(dto.getEmail()
+        if (dto.getUsername()!=null || !dto.getUsername().isEmpty()){
+            entity.setUsers(dto.getUsername()
                     .stream()
-                    .map(email -> {
+                    .map(username -> {
                         User assignedUser =  new User();
-                        assignedUser.setEmail(email);
+                        assignedUser.setUsername(username);
                         return assignedUser;
                     }).toList());
         }
@@ -105,13 +105,13 @@ public class TaskDto {
         dto.setDescription(entity.getDescription());
         dto.setDueDate(entity.getDueDate());
         dto.setPriority(entity.getPriority());
-        if(entity.getUsers() != null){
-            List<UserDto> userEntities = new ArrayList<>();
-            for(User user:entity.getUsers()){
-                userEntities.add(UserDto.entityToDto(user));
-            }
-            dto.setUsers(userEntities);
-        }
+//        if(entity.getUsers() != null){
+//            List<UserDto> userEntities = new ArrayList<>();
+//            for(User user:entity.getUsers()){
+//                userEntities.add(UserDto.entityToDto(user));
+//            }
+//            dto.setUsers(userEntities);
+//        }
         dto.setAssignedOn(entity.getAssignedOn());
         dto.setCreatedBy(entity.getCreatedBy());
         dto.setAssignedBy(entity.getAssignedBy());
@@ -123,10 +123,10 @@ public class TaskDto {
                     return task.getTaskId();
                 })
                 .toList():null);
-        dto.setEmail(entity.getUsers()!=null ? entity.getUsers()
+        dto.setUsername(entity.getUsers()!=null ? entity.getUsers()
                 .stream()
                 .map(user -> {
-                    return user.getEmail();
+                    return user.getUsername();
                 })
                 .toList():null);
         return dto;

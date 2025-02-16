@@ -1,11 +1,14 @@
 package com.neha.TaskManagement.Configuration;
 
+import com.neha.TaskManagement.Security.Jwt.JwtTokenValidatorFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
@@ -14,6 +17,8 @@ import java.util.List;
 
 @Configuration
 public class AppSecurityConfig {
+    @Autowired
+    private JwtTokenValidatorFilter jwtTokenValidatorFilter;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(csrf -> csrf.disable())
@@ -30,7 +35,11 @@ public class AppSecurityConfig {
 
                     return configuration;
                 }))
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/api/users/login").permitAll()
+                        .requestMatchers("/api/users/signup").permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtTokenValidatorFilter, BasicAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults());
 
         return httpSecurity.build();

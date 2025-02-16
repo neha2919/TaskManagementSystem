@@ -54,7 +54,7 @@ public class User {
 
     //Many To Many mapping for Users to Task
     //This should be the owning side.
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_tasks",
             joinColumns = @JoinColumn(name = "user_id"),//foreign key for User
@@ -66,7 +66,6 @@ public class User {
     }
 
     @PrePersist
-
     public void onPrePersist() {
         this.employeeId = "COMP" + this.email.hashCode();
         this.fullName = this.firstName.trim() + " " + this.lastName.trim();

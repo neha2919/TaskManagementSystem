@@ -24,8 +24,9 @@ public class UserRole {
     @ManyToMany(mappedBy = "roles")
     private List<User> user;
 
+    @PrePersist
     public  void onPrePersist(){
-        this.roleCode = this.roleName.toUpperCase().replaceAll("[^a-zA-Z]", "");
+        this.roleCode = this.roleName.toUpperCase().replaceAll("[^a-zA-Z]", "_");
     }
 
 }

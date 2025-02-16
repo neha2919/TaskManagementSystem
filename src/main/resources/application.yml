@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: TaskManagement
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/Task
+    username: root
+    password: Ashar@581
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+app:
+  security:
+    key:
+      signingSecret: 1qaz:0okm:4rfv:7ujm:6tfc::123edc:8uhb
+      type: shared
+    jwt:
+      atExpirationMin: 360
+      rtExpirationMin: 4320
+      authType: Bearer
+      header: Authorization
+      issuer: https://neha-task-management.in

@@ -4,8 +4,10 @@ import com.neha.TaskManagement.Dtos.UserRoleDto;
 import com.neha.TaskManagement.Entity.UserRole;
 import com.neha.TaskManagement.Exception.ConflictException;
 import com.neha.TaskManagement.Exception.NotFoundException;
+import com.neha.TaskManagement.Exception.NullException;
 import com.neha.TaskManagement.Repository.UserRoleRepository;
 import com.neha.TaskManagement.Repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +57,16 @@ public class UserRoleServiceImpl implements UserRoleService {
         UserRole updateUserRole = userRoleRepository.save(userRole);
 
         return UserRoleDto.entityToDto(updateUserRole);
+    }
+
+    @Override
+    @Transactional
+    public UserRoleDto delete(String  roleName) {
+        if (roleName==null || roleName.isEmpty()) throw new NullException("Role name cannot be empty.");
+        UserRole role = userRoleRepository.findByRoleName(roleName)
+                .orElseThrow(()->new NotFoundException("Role not found."));
+        userRoleRepository.delete(role);
+        return UserRoleDto.entityToDto(role);
     }
 
 }

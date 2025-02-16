@@ -5,6 +5,9 @@ import com.neha.TaskManagement.BaseStructure.BaseApiStructure;
 import com.neha.TaskManagement.Dtos.LoginRequestDto;
 import com.neha.TaskManagement.Dtos.UserDto;
 import com.neha.TaskManagement.Entity.User;
+import com.neha.TaskManagement.Model.LoginRequest;
+import com.neha.TaskManagement.Model.LoginResponse;
+import com.neha.TaskManagement.Security.LocalAuthStore;
 import com.neha.TaskManagement.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +30,8 @@ public class UserController extends BaseApiStructure {
         return sendSuccessfulApiResponse(userService.signupUser(userDto), "Successful signup");
     }
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<UserDto>> loginUser(@Valid @RequestBody LoginRequestDto requestDto){
-        return sendSuccessfulApiResponse(userService.loginUser(requestDto), "Successful login");
+    public ResponseEntity<ApiResponse<LoginResponse>> loginUser(@Valid @RequestBody LoginRequest loginRequest){
+        return sendSuccessfulApiResponse(userService.loginUser(loginRequest), "Successful login");
     }
     //we do not need any userid as path variable instead, user the userDto for the id/email.
     @PutMapping("/update/{userId}")

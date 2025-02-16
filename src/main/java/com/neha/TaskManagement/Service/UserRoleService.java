@@ -10,4 +10,5 @@ public interface UserRoleService {
     public List<UserRoleDto> getAllRoles();
     public UserRoleDto getRoleById(UUID roleId);
     public UserRoleDto updateRole(UserRoleDto userRoleDto);
+    public UserRoleDto delete(String roleName);
 }

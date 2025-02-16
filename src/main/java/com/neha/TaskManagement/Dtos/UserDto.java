@@ -49,7 +49,6 @@ public class UserDto {
         entity.setId(dto.getId());
         entity.setUsername(dto.getUsername());
         entity.setPhoneNumber(dto.getPhoneNumber());
-
         //Each TaskDto in the DTO must be converted into a Task entity before being assigned to User. This requires custom logic, which is implemented either using streams or a loop.
         //set taskDto list too.
         //review and understand properly
@@ -90,7 +89,7 @@ public class UserDto {
         if(entity.getRoles() != null){
             Set<String> roleNames = new HashSet<>();
             for(UserRole role : entity.getRoles()){
-                roleNames.add(role.getRoleName());
+                roleNames.add(role.getRoleCode());
             }
             dto.setRoles(roleNames);
         }

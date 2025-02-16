@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/user_roles")
+@RequestMapping("api/roles")
 public class UserRoleController extends BaseApiStructure{
     @Autowired
     private UserRoleService userRoleService;
 
-    @PostMapping("/createRole")
+    @PostMapping("/create")
     public ResponseEntity<ApiResponse<UserRoleDto>> createRole(@Valid @RequestBody UserRoleDto userRoleDto){
         return sendSuccessfulApiResponse(userRoleService.createRole(userRoleDto), "Role created successfully");
     }
@@ -34,5 +34,10 @@ public class UserRoleController extends BaseApiStructure{
     @PostMapping("/update")
     public ResponseEntity<ApiResponse<UserRoleDto>> updateRole(@Valid @RequestBody UserRoleDto userRoleDto){
         return sendSuccessfulApiResponse(userRoleService.createRole(userRoleDto), "Role Updated!");
+    }
+
+    @DeleteMapping("{roleName}")
+    public ResponseEntity<ApiResponse<UserRoleDto>> delete(@PathVariable("roleName") String roleName){
+        return sendSuccessfulApiResponse(userRoleService.delete(roleName),"Role deleted.");
     }
 }

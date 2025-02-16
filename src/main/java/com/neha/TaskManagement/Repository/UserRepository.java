@@ -21,6 +21,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
     Optional<List<User>> findByTasks_TaskId(UUID taskId);
+    List<User> findByUsernameIn(List<String> email);
 }
 
 //@Query(value = "select * from users where email = :email and Admin = :isAdmin", nativeQuery = true)
