@@ -28,7 +28,7 @@ public class AppSecurityConfig {
                     configuration.setExposedHeaders(List.of("Authorization"));
                     configuration.setAllowedOrigins(Collections.singletonList("*"));
                     configuration.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE"));
-                    configuration.setExposedHeaders(Collections.singletonList("*"));
+                    configuration.setAllowedHeaders(Collections.singletonList("*"));
 
                     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
                     source.registerCorsConfiguration("/**",configuration);

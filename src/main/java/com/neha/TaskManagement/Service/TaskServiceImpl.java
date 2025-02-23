@@ -42,7 +42,7 @@ public class TaskServiceImpl implements TaskService{
         taskDto.setCreatedBy(currentUser);
         taskDto.setAssignedBy(currentUser);
 
-        List<User> assignedUsers = userRepository.findByUsernameIn(taskDto.getUsername());
+        List<User> assignedUsers = userRepository.findByUsernameIn(new HashSet<>(taskDto.getUsername()));
         if (assignedUsers.isEmpty()) {
             throw new NotFoundException("No users found for the given emails.");
         }
@@ -100,7 +100,7 @@ public class TaskServiceImpl implements TaskService{
             }
             if (taskDto.getPriority()!=null) existingTask.setPriority(taskDto.getPriority());
         }
-        else if (assignedUsers.contains(currentUser.getPrincipal())){
+        if (assignedUsers.contains(currentUser.getPrincipal())){
             if (taskDto.getProgress()!=null) existingTask.setProgress(taskDto.getProgress());
         }
         else throw new UnauthorizedException("You are not authorized to update this task.");
@@ -134,7 +134,7 @@ public class TaskServiceImpl implements TaskService{
             converted.setAssignedBy(currentUser);
             converted.setProgress(Progress.PENDING);
             //assigning users to sub-tasks.
-            List<User> assignedUser = userRepository.findByUsernameIn(subTask.getUsername());
+            List<User> assignedUser = userRepository.findByUsernameIn(new HashSet<>(subTask.getUsername()));
             converted.setUsers(new ArrayList<>(assignedUser));
 
             //child parentTask update
@@ -169,7 +169,10 @@ public class TaskServiceImpl implements TaskService{
         if (taskDto.getTaskId()==null) throw new NullException("Task ID cannot be empty.");
         Task task = taskRepository.findById(taskDto.getTaskId()).orElseThrow(()->new NotFoundException("Task not found."));
         if (task.getUsers()==null || task.getUsers().isEmpty()) task.setUsers(new ArrayList<>());
-        List<User> users = userRepository.findByUsernameIn(taskDto.getUsername());
+        List<User> users = userRepository.findByUsernameIn(new HashSet<>(taskDto.getUsername()))
+                .stream()
+                .filter(user -> user!=null && !user.getUsername().equalsIgnoreCase(LocalAuthStore.getLocalAuthStore().getJwtUser().getPrincipal()))
+                .toList();
         if (users.isEmpty()) throw new NotFoundException("No user was found from the given list.");
         for (User user : users){
             if (user.getTasks()==null) user.setTasks(new ArrayList<>());
@@ -186,7 +189,7 @@ public class TaskServiceImpl implements TaskService{
         if (taskDto.getTaskId()==null) throw new NullException("Task ID cannot be empty.");
         Task task = taskRepository.findById(taskDto.getTaskId()).orElseThrow(()->new NotFoundException("Task not found."));
         if (task.getUsers()==null || task.getUsers().isEmpty()) task.setUsers(new ArrayList<>());
-        List<User> users = userRepository.findByUsernameIn(taskDto.getUsername());
+        List<User> users = userRepository.findByUsernameIn(new HashSet<>(taskDto.getUsername()));
         if (users.isEmpty()) throw new NotFoundException("No user was found from the given list.");
         for (User user : users){
             if (user.getTasks()==null) user.setTasks(new ArrayList<>());
@@ -195,6 +198,14 @@ public class TaskServiceImpl implements TaskService{
         task.getUsers().removeAll(users);
         task = taskRepository.save(task);
         return task.getUsers().stream().map(User::getUsername).toList();
+    }
+
+    @Override
+    public List<TaskDto> getTaskByIds(List<UUID> uuidList) {
+        List<Task> taskList = taskRepository.findAllById(uuidList);
+        if (taskList.isEmpty()) throw new NotFoundException("No tasks exists.");
+
+        return taskList.stream().map(TaskDto::entityToDto).toList();
     }
 
     /**

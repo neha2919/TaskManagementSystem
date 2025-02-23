@@ -16,5 +16,6 @@ public interface TaskService {
     List<TaskDto> getTaskByUser(String username);
     List<String> assignNewUsers(TaskDto taskDto);
     List<String> removeAssignedUser(TaskDto taskDto);
+    List<TaskDto> getTaskByIds(List<UUID> uuidList);
 
 }

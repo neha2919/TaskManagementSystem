@@ -52,6 +52,7 @@ public class TaskDto {
         entity.setDescription(dto.getDescription());
         entity.setDueDate(dto.getDueDate());
         entity.setPriority(dto.getPriority());
+        entity.setProgress(dto.getProgress());
         if(dto.getUsers() != null){
             List<User> userEntities = new ArrayList<>();
             for(UserDto userDto:dto.getUsers()){

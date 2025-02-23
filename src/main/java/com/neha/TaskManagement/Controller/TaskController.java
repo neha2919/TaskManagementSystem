@@ -36,6 +36,10 @@ public class TaskController extends BaseApiStructure {
     public ResponseEntity getTaskById(@PathVariable UUID taskId){
         return sendSuccessfulApiResponse(taskService.getTaskById(taskId),"Task viewed.");
     }
+    @PostMapping("/subtasks")
+    public ResponseEntity getTasksByIds(@RequestBody List<String> taskIds){
+        return sendSuccessfulApiResponse(taskService.getTaskByIds(taskIds.stream().map(UUID::fromString).toList()),"All tasks view by ID list.");
+    }
 
     @GetMapping("all")
     public ResponseEntity getAllTasks(){
@@ -63,7 +67,9 @@ public class TaskController extends BaseApiStructure {
         return sendSuccessfulApiResponse(taskService.deleteTask(taskId),"Task deleted.");
     }
     @GetMapping("user")
-    public ResponseEntity getTaskByUser(@RequestParam("username") String username){
-        return sendSuccessfulApiResponse(taskService.getTaskByUser(username),"Task list view for "+username);
+    public ResponseEntity getTaskByUser(@RequestParam(value = "username",required = false) String username){
+        //Will convert it to token based.
+        String userid = username==null?LocalAuthStore.getLocalAuthStore().getJwtUser().getPrincipal():username;
+        return sendSuccessfulApiResponse(taskService.getTaskByUser(userid),"Task list view for "+userid);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -21,7 +22,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
     Optional<List<User>> findByTasks_TaskId(UUID taskId);
-    List<User> findByUsernameIn(List<String> email);
+    List<User> findByUsernameIn(Set<String> email);
 }
 
 //@Query(value = "select * from users where email = :email and Admin = :isAdmin", nativeQuery = true)
