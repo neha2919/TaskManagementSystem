@@ -26,7 +26,7 @@ public class AppSecurityConfig {
                 .cors(cors -> cors.configurationSource(config ->{
                     CorsConfiguration configuration = new CorsConfiguration();
                     configuration.setExposedHeaders(List.of("Authorization"));
-                    configuration.setAllowedOrigins(Collections.singletonList("*"));
+                    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
                     configuration.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE"));
                     configuration.setAllowedHeaders(Collections.singletonList("*"));
 
@@ -38,7 +38,7 @@ public class AppSecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/users/login").permitAll()
                         .requestMatchers("/api/users/signup").permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .addFilterBefore(jwtTokenValidatorFilter, BasicAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults());
 
