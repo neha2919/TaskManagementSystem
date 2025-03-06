@@ -4,13 +4,16 @@ spring:
     name: TaskManagement
 
   datasource:
-    url: jdbc:mysql://localhost:3306/Task
-    username: root
-    password: Ashar@581
+    url: jdbc:postgresql://dpg-cv4hijij1k6c73bk3v80-a:5432/taskmanagement_db_2x78
+    username: taskmanagement_db_2x78_user
+    password: faNkzIPeN0hV09jORClzoEevQMaqr0WC
+    driver-class-name: org.postgresql.Driver
 
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
+
 
 app:
   security:
