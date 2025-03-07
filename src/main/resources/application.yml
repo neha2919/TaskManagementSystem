@@ -4,9 +4,9 @@ spring:
     name: TaskManagement
 
   datasource:
-    url: jdbc:postgresql://dpg-cv4hijij1k6c73bk3v80-a:5432/taskmanagement_db_2x78
-    username: taskmanagement_db_2x78_user
-    password: faNkzIPeN0hV09jORClzoEevQMaqr0WC
+    url: jdbc:postgresql://dpg-cv4lj6tds78s73e0bh00-a.oregon-postgres.render.com:5432/taskmanagement_db_soi3
+    username: taskmanagement_db_soi3_user
+    password: xTy9c3GFyC2G7pZ3kMi0y6njVz6mMYhb
     driver-class-name: org.postgresql.Driver
 
   jpa:
